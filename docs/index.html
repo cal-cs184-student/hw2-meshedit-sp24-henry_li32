@@ -39,9 +39,9 @@
 
 <body>
 
-<h1 align="middle">CS 184: Computer Graphics and Imaging, Spring 2018</h1>
+<h1 align="middle">CS 184: Computer Graphics and Imaging, Spring 2024</h1>
 <h1 align="middle">Project 2: Mesh Edit</h1>
-<h2 align="middle">YOUR NAME</h2>
+<h2 align="middle">Henry Li</h2>
 
 <br><br>
 
@@ -49,7 +49,9 @@
 
 <h2 align="middle">Overview</h2>
 <p>
-    YOUR RESPONSE GOES HERE
+    In this assignment, I have implemented algorithms to build beizier curves and beizier surfaces through linear interpolation, and
+    manipulate with the halfedge mesh data structure to realize features including continuous normal vectors through the surface
+    for smoother shading by interpolating vertex normal, edge flip and edge split, and Loop subdivision for mesh upsampling.
 </p>
 <br>
 
@@ -63,7 +65,12 @@
   Briefly explain de Casteljau's algorithm and how you implemented it in order to evaluate Bezier curves.
 </b>
 <p>
-    YOUR RESPONSE GOES HERE
+    Casteljau's Algorithm considers the Bezier curve as the continuous collection of points with parameter t from 0 to 1.
+    For a specific t, we perform a loop starting from the given n control points, evalute an interpolated point for every adjacent
+    control points pair with the parameter t; we then evaluate deeper layers of interpolated point until we have only one point left,
+    and that point is the point on the Bezier curve with parameter t. My actual coding follows directly with this description, by defining
+    a single step of linear interpolation, we applied this to the original control points recursively to evaluate a point for a given t,
+    and the final curve will be the collection of all t from 0 to 1.
 </p>
 <br>
 
@@ -72,11 +79,11 @@
   Take a look at the provided .bzc files and create your own Bezier curve with 6 control points of your choosing. Use this Bezier curve for your screenshots below.
 </b>
 <p>
-    YOUR RESPONSE GOES HERE
+    New file created as curve_writeup.bzc
 </p>
 <!-- Example of including a single figure -->
 <div align="middle">
-  <img src="images/your_file.png" align="middle" width="50%">
+  <img src="../images/bzc_file.png" align="middle" width="50%">
 </div>
 <br>
 
@@ -88,29 +95,29 @@
   <table style="width:100%">
     <tr align="center">
       <td>
-        <img src="images/your_file.png" align="middle" width="400px"/>
+        <img src="../images/p1_step1.png" align="middle" width="400px"/>
         <figcaption>Level 0</figcaption>
       </td>
       <td>
-        <img src="images/your_file.png" align="middle" width="400px"/>
+        <img src="../images/p1_step2.png" align="middle" width="400px"/>
         <figcaption>Level 1</figcaption>
       </td>
     </tr>
     <br>
     <tr align="center">
       <td>
-        <img src="images/your_file.png" align="middle" width="400px"/>
+        <img src="../images/p1_step3.png" align="middle" width="400px"/>
         <figcaption>Level 2</figcaption>
       </td>
       <td>
-        <img src="images/your_file.png" align="middle" width="400px"/>
+        <img src="../images/p1_step4.png" align="middle" width="400px"/>
         <figcaption>Level 3</figcaption>
       </td>
     </tr>
     <br>
     <tr align="center">
       <td>
-        <img src="images/your_file.png" align="middle" width="400px"/>
+        <img src="../images/p1_step5.png" align="middle" width="400px"/>
         <figcaption>Level 4</figcaption>
       </td>
     </tr>
@@ -123,8 +130,15 @@
   Show a screenshot of a slightly different Bezier curve by moving the original control points around and modifying the parameter \(t\) via mouse scrolling.
 </b>
 <p>
-    YOUR RESPONSE GOES HERE
+    Modified the last point and setting a smaller t.
 </p>  
+<tr align="center">
+  <td>
+    <img src="../images/p1_adjusted.png" align="middle" width="400px"/>
+    <figcaption>Adjusted</figcaption>
+  </td>
+</tr>
+
 <br>
 
 
@@ -133,7 +147,12 @@
   Briefly explain how de Casteljau algorithm extends to Bezier surfaces and how you implemented it in order to evaluate Bezier surfaces.
 </b>
 <p>
-    YOUR RESPONSE GOES HERE
+    For surfaces, instead of having one single parameter t corresponding to a location on the curve, we now have two parameters
+    u, v to define a point on the surface. Suppose we have n*n control points, for this specific (u,v) point, we first compute 
+    n points on n bezier curves using each "row" of n control points with the parameter u using de Casteljau; we then use these n interpolated points
+    to form a "columm" bezier curve and use de Castejau again with parameter v to find the actual (u,v) point on the surface. In my
+    implementation, we first define a method that compute 1-d bezier curve as in Part1 and then iterate through the rows of control
+    points to get the final surface by performing the 1-d method again.
 </p>
 <br>
 
@@ -141,9 +160,12 @@
 <b>
   Show a screenshot of bez/teapot.bez (not .dae) evaluated by your implementation.
 </b>
-<p>
-    YOUR RESPONSE GOES HERE
-</p>
+<tr align="center">
+    <td>
+        <img src="../images/p2_teapot.png" align="middle" width="400px" />
+        <figcaption>Bezier Surface: Teapot</figcaption>
+    </td>
+</tr>
 <br>
 
 
@@ -155,7 +177,10 @@
   Briefly explain how you implemented the area-weighted vertex normals.
 </b>
 <p>
-    YOUR RESPONSE GOES HERE
+    For area-weighted vertex normals, the key step is the iterate through the neighbor vertices of the given vertex. Each neighbor triangle
+    then constitutes pairs of adjacent neighbor vertices and the given vertex. Using these vertices we can compute two vectors and their
+    cross product, which is the normal, and the area of the triangle is just one half the norm of the normal vector. Adding the normals
+    together and nomalize the sum give us the area-weighted vertex normal.
 </p>
 <br>
 
@@ -164,7 +189,18 @@
   Show screenshots of dae/teapot.dae (not .bez) comparing teapot shading with and without vertex normals. Use <kbd>Q</kbd> to toggle default flat shading and Phong shading.
 </b>
 <p>
-    YOUR RESPONSE GOES HERE
+    <tr align="center">
+        <td>
+            <img src="../images/p3_flat.png" align="middle" width="400px" />
+            <figcaption>Flat shading</figcaption>
+        </td>
+    </tr>
+    <tr align="center">
+        <td>
+            <img src="../images/p3_phong.png" align="middle" width="400px" />
+            <figcaption>Phong shading using area-weighted vertex normals</figcaption>
+        </td>
+    </tr>
 </p>
 <br>
 
@@ -174,7 +210,10 @@
   Briefly explain how you implemented the edge flip operation and describe any interesting implementation / debugging tricks you have used.
 </b>
 <p>
-    YOUR RESPONSE GOES HERE
+    First, I stored all the pre-flip pointers of every face, edge, vertex, and halfedge of the two neighboring triangles. Then, performing the flip is basically
+    reassigning all of these pointers. To ensure nothing is lost, I basically reassign every pointers even if they are not changed.
+    I think the key to accurately reassign the pointers is to draw a diagram and name each object with names corresponding to your
+    diagram, then reassining pointers is no different from reading off of the drawing of the diagram.
 </p>
 <br>
 
@@ -183,7 +222,18 @@
   Show screenshots of the teapot before and after some edge flips.
 </b>
 <p>
-    YOUR RESPONSE GOES HERE
+    <tr align="center">
+        <td>
+            <img src="../images/p4_before.png" align="middle" width="400px" />
+            <figcaption>Teapot mesh before flip</figcaption>
+        </td>
+    </tr>
+    <tr align="center">
+        <td>
+            <img src="../images/p4_after.png" align="middle" width="400px" />
+            <figcaption>Teapot mesh after flipping four edges</figcaption>
+        </td>
+    </tr>
 </p>
 <br>
 
@@ -192,7 +242,7 @@
     Write about your eventful debugging journey, if you have experienced one.
 </b>
 <p>
-    YOUR RESPONSE GOES HERE
+    My code runed well on my first shot.
 </p>
 <br>
 
@@ -202,7 +252,9 @@
   Briefly explain how you implemented the edge split operation and describe any interesting implementation / debugging tricks you have used.
 </b>
 <p>
-    YOUR RESPONSE GOES HERE
+    Similar to edge flip, I first stored all pre-split pointers of the two neighboring triangles. Then, I created a new vertex, 
+    two new faces (the orginal two faces are still used), three new edges, and six new halfedges. At last, I reassign all of the 
+    pointers by object types carefully. Similar to the part4, drawing a diagram and naming carefully is extremely helpful. 
 </p>
 <br>
 
@@ -211,7 +263,18 @@
     Show screenshots of a mesh before and after some edge splits. 
 </b>
 <p>
-    YOUR RESPONSE GOES HERE
+    <tr align="center">
+        <td>
+            <img src="../images/p5_before.png" align="middle" width="400px" />
+            <figcaption>Teapot mesh before split</figcaption>
+        </td>
+    </tr>
+    <tr align="center">
+        <td>
+            <img src="../images/p5_after.png" align="middle" width="400px" />
+            <figcaption>Teapot mesh after splitting edges in the middle</figcaption>
+        </td>
+    </tr>
 </p>
 <br>
 
@@ -220,7 +283,12 @@
     Show screenshots of a mesh before and after a combination of both edge splits and edge flips.
 </b>
 <p>
-    YOUR RESPONSE GOES HERE
+    <tr align="center">
+        <td>
+            <img src="../images/p5_combined.png" align="middle" width="400px" />
+            <figcaption>Teapot mesh after splitting and flipping</figcaption>
+        </td>
+    </tr>
 </p>
 <br>
 
@@ -229,7 +297,8 @@
     Write about your eventful debugging journey, if you have experienced one.
 </b>
 <p>
-    YOUR RESPONSE GOES HERE
+   With the help of drawing a diagram, I haven't experience a lot of debugging for this part. However, it was crucial to 
+    have the newly created vertex pointing to the edge being split, I have suffer due to this when working in part6.
 </p>
 <br>
 
@@ -248,7 +317,13 @@
   Briefly explain how you implemented the loop subdivision and describe any interesting implementation / debugging tricks you have used.
 </b>
 <p>
-    YOUR RESPONSE GOES HERE
+    Firstly, I iterate through all original vertices of the mesh, for each iterated vertex, I compute its updated position using its
+    position and its neighboring vertices' position. Then I iterate through all original edges to compute the position of newly created
+    verticies using neighboring vertices. After calculating all updated position, I split all existing edges, mark those new vertices 
+    and edges. I then iterate through all of the edges again to check those that are new and connects an old and a new vertex and flip them.
+    At the end, I update all their positions. To me, the most challenging part in this implementation is to prevent infite loop during edge
+    split. I believed without carefully marking new and old edges will result in splitting splitted edges or new edges. The silly solution I 
+    did was to store a list of old vectors when I iterate through them in step 2(calculate updated position), which helps a lot.
 </p>
 <br>
 
@@ -257,7 +332,43 @@
   Take some notes, as well as some screenshots, of your observations on how meshes behave after loop subdivision. What happens to sharp corners and edges? Can you reduce this effect by pre-splitting some edges?
 </b>
 <p>
-    YOUR RESPONSE GOES HERE
+    In general, after loop subdivision, most edges and corner are smoothen out and become rounded. However, for the cube example,
+    the corner vertex with degree 3 will remain a little pointy after loop subdivision, possibily because it has the lowest degree.
+    <tr align="center">
+        <td>
+            <img src="../images/p6_pointy_1.png" align="middle" width="400px" />
+            <figcaption>Pointy corner: Original Mesh</figcaption>
+        </td>
+    </tr>
+    <tr align="center">
+        <td>
+            <img src="../images/p6_pointy_2.png" align="middle" width="400px" />
+            <figcaption>Pointy corner: upsampled</figcaption>
+        </td>
+    </tr>
+    <tr align="center">
+        <td>
+            <img src="../images/p6_pointy_3.png" align="middle" width="400px" />
+            <figcaption>Pointy corner: further upsampled</figcaption>
+        </td>
+    </tr>
+    The smoothing effect can be affected by pre-splitting some edge, and make the upsampled shape different, for example having a
+    extra part bumping out. For the pointy corner, I haven't find a way to smooth it out, but I can instead create a more pointy corner
+    by pre-fliping.
+    <p>
+    <tr align="center">
+        <td>
+            <img src="../images/p6_bump.png" align="middle" width="400px" />
+            <figcaption>Created a bump edge by pre-splitting a few edges.</figcaption>
+        </td>
+    </tr>
+    <tr align="center">
+        <td>
+            <img src="../images/p6_ppointyy.png" align="middle" width="400px" />
+            <figcaption>Extra pointy corner by pre-flipping one of its incident edge</figcaption>
+        </td>
+    </tr>
+    </p>
 </p>
 <br>
 
@@ -266,7 +377,79 @@
   Load dae/cube.dae. Perform several iterations of loop subdivision on the cube. Notice that the cube becomes slightly asymmetric after repeated subdivisions. Can you pre-process the cube with edge flips and splits so that the cube subdivides symmetrically? Document these effects and explain why they occur. Also explain how your pre-processing helps alleviate the effects.
 </b>
 <p>
-    YOUR RESPONSE GOES HERE
+    <div align="middle">
+        <table style="width:100%">
+            <tr align="center">
+                <td>
+                    <img src="../images/p6_cube1.png" align="middle" width="400px" />
+                    <figcaption>Original Mesh</figcaption>
+                </td>
+                <td>
+                    <img src="../images/p6_cube2.png" align="middle" width="400px" />
+                    <figcaption>1 Upsampling</figcaption>
+                </td>
+            </tr>
+            <br />
+            <tr align="center">
+                <td>
+                    <img src="../images/p6_cube3.png" align="middle" width="400px" />
+                    <figcaption>2 Upsampling</figcaption>
+                </td>
+                <td>
+                    <img src="../images/p6_cube4.png" align="middle" width="400px" />
+                    <figcaption>3 Upsampling</figcaption>
+                </td>
+            </tr>
+            <br />
+            <tr align="center">
+                <td>
+                    <img src="../images/p6_cube5.png" align="middle" width="400px" />
+                    <figcaption>4 Upsampling</figcaption>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <br />
+    To make the cube symmetric, I flip a few edges of the original mesh so that the degree of each vertex is now either 6 or 3
+    and none of the adjacent vertex has the same degree. The result is that the degree of vertex is now symmetric. Previously, the
+    assymetry is caused by assymetric degree distribution of the verticies so each vertex's position is updated assymetrically
+    during upsampling. By pre-flipping a few edges and ensure symmetry of vertex degree, the position update will also be symmetric
+    during upsampling, thus alleviated the effect.
+<p>
+    <div align="middle">
+        <table style="width:100%">
+            <tr align="center">
+                <td>
+                    <img src="../images/p6_symmetry1.png" align="middle" width="400px" />
+                    <figcaption>Original Mesh after pre-flipping</figcaption>
+                </td>
+                <td>
+                    <img src="../images/p6_symmetry2.png" align="middle" width="400px" />
+                    <figcaption>1 Upsampling</figcaption>
+                </td>
+            </tr>
+            <br />
+            <tr align="center">
+                <td>
+                    <img src="../images/p6_symmetry3.png" align="middle" width="400px" />
+                    <figcaption>2 Upsampling</figcaption>
+                </td>
+                <td>
+                    <img src="../images/p6_symmetry4.png" align="middle" width="400px" />
+                    <figcaption>3 Upsampling</figcaption>
+                </td>
+            </tr>
+            <br />
+            <tr align="center">
+                <td>
+                    <img src="../images/p6_symmetry5.png" align="middle" width="400px" />
+                    <figcaption>4 Upsampling</figcaption>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <br />
+</p>
 </p>
 <br>
 
