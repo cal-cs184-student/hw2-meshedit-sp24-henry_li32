@@ -65,7 +65,7 @@
   Briefly explain de Casteljau's algorithm and how you implemented it in order to evaluate Bezier curves.
 </b>
 <p>
-    Casteljau's Algorithm considers the Bezier curve as the continuous collection of points with parameter t from 0 to 1.
+    de Casteljau's Algorithm considers the Bezier curve as the continuous collection of points with parameter t from 0 to 1.
     For a specific t, we perform a loop starting from the given n control points, evalute an interpolated point for every adjacent
     control points pair with the parameter t; we then evaluate deeper layers of interpolated point until we have only one point left,
     and that point is the point on the Bezier curve with parameter t. My actual coding follows directly with this description, by defining
